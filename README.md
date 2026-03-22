@@ -102,6 +102,6 @@ rm -rf bin/
 
 ## Additional improvements
 
-- Group-scheduling: Pods with the same pod-group annotation should all get scheduled (or not if unsufficient nodes)
+- Group-scheduling: Pods with the same pod-group annotation should all get scheduled (or all NOT if insufficient nodes)
 - Retry mechanism: Current retry is inherent to the unending for-loop; a more sophisticated retry algorithm could entail "booting" already-scheduled/already-bound, lower priority pods when higher priority pods are newly launched but no nodes are available
 - Performance: Current bottleneck is definitely O(nlogn) sorting of pods by priority; using a combination of Informer (K8s construct for event-driven pod handling) + priority queue (eliminates redundant re-sorts) could enhance scheduling speed, especially as pod count and cluster size grow
