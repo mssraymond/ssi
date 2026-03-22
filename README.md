@@ -8,6 +8,7 @@
 
 ## Prerequisites
 
+- Install [Docker](https://docs.docker.com/get-started/get-docker/)
 - Install [kind](https://kind.sigs.k8s.io/docs/user/quick-start#installation)
 - Install [Go](https://go.dev/doc/install)
 
