@@ -18,9 +18,9 @@ import (
 
 // Predefined priority order
 var priorityOrder = map[string]int{
-	"high":   1,
+	"high":   3,
 	"medium": 2,
-	"low":    3,
+	"low":    1,
 }
 
 // Get priority of pod according to `priorityOrder` map
@@ -30,7 +30,7 @@ func getPriority(pod *v1.Pod) int {
 			return rank
 		}
 	}
-	return 4
+	return 0
 }
 
 func main() {
@@ -80,7 +80,7 @@ func main() {
 		}
 		// Sort according to priority
 		sort.Slice(pods.Items, func(i, j int) bool {
-			return getPriority(&pods.Items[i]) < getPriority(&pods.Items[j])
+			return getPriority(&pods.Items[i]) > getPriority(&pods.Items[j])
 		})
 		// Build set of occupied nodes
 		occupiedNodes := make(map[string]bool)

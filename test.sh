@@ -17,6 +17,7 @@ trap "echo 'Cleaning up...'; \
 echo ""
 echo "=== SSI Scheduler Test ==="
 
+# Launch 5 pods, schedule priority-labeled ones according to priority order, followed by those without priority labels (1 unscheduled)
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -80,6 +81,7 @@ echo ""
 echo "=== Pod Status ==="
 kubectl get pods -o wide
 
+# Remove the scheduled "without priority label" pod, giving the straggler pod a chance to be scheduled
 echo ""
 echo "=== Remove pod ==="
 kubectl delete pod pod-none
