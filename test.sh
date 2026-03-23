@@ -42,7 +42,37 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pod-low
+  name: crewmate-1
+  annotations:
+    ssi.scheduler/pod-group: crew
+  labels:
+    priority: low
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crewmate-2
+  annotations:
+    ssi.scheduler/pod-group: crew
+  labels:
+    priority: low
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crewmate-3
+  annotations:
+    ssi.scheduler/pod-group: crew
   labels:
     priority: low
 spec:
@@ -66,9 +96,95 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: pod-medium
+  name: teammate-1
+  annotations:
+    ssi.scheduler/pod-group: team
   labels:
     priority: medium
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: teammate-2
+  annotations:
+    ssi.scheduler/pod-group: team
+  labels:
+    priority: medium
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: teammate-3
+  annotations:
+    ssi.scheduler/pod-group: team
+  labels:
+    priority: medium
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: teammate-4
+  annotations:
+    ssi.scheduler/pod-group: team
+  labels:
+    priority: medium
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gangster-1
+  annotations:
+    ssi.scheduler/pod-group: gang
+  labels:
+    priority: low
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gangster-2
+  annotations:
+    ssi.scheduler/pod-group: gang
+  labels:
+    priority: medium
+spec:
+  schedulerName: ssi-scheduler
+  containers:
+    - name: nginx
+      image: nginx
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gangster-3
+  annotations:
+    ssi.scheduler/pod-group: gang
+  labels:
+    priority: high
 spec:
   schedulerName: ssi-scheduler
   containers:
@@ -81,7 +197,37 @@ echo ""
 echo "=== Pod Status ==="
 kubectl get pods -o wide
 
-# Remove the scheduled "without priority label" pod, giving the straggler pod a chance to be scheduled
+# Remove pods from 'gang' PodGroup
+echo ""
+echo "=== Remove pod ==="
+kubectl delete pod gangster-1 gangster-2 gangster-3
+
+sleep 10
+echo ""
+echo "=== Pod Status ==="
+kubectl get pods -o wide
+
+# Remove pod 'pod-high' to make room for PodGroup 'team'
+echo ""
+echo "=== Remove pod ==="
+kubectl delete pod pod-high
+
+sleep 10
+echo ""
+echo "=== Pod Status ==="
+kubectl get pods -o wide
+
+# Remove pods from 'team' PodGroup
+echo ""
+echo "=== Remove pod ==="
+kubectl delete pod teammate-1 teammate-2 teammate-3 teammate-4
+
+sleep 10
+echo ""
+echo "=== Pod Status ==="
+kubectl get pods -o wide
+
+# Remove the scheduled "priority-less" pod, giving the straggler pod a chance to be scheduled
 echo ""
 echo "=== Remove pod ==="
 kubectl delete pod pod-none
@@ -96,4 +242,4 @@ echo "=== Scheduling Events (verify priority order) ==="
 kubectl get events \
     --field-selector reason=Scheduled \
     --sort-by='.lastTimestamp' \
-    | grep -E "pod-high|pod-medium|pod-low|pod-none|pod-undefined"
+    | grep -E "pod-high|pod-medium|pod-low|pod-none|pod-undefined|gangster-1|gangster-2|gangster-3|teammate-1|teammate-2|teammate-3|teammate-4|crewmate-1|crewmate-2|crewmate-3"
